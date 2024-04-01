@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wordle</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="style.css">
+    <script src="words.js"></script>
+
+</head>
+
+<body>
+    <div id="container">
+        <div id="game">
+            <header>
+                <h1 class="title">WORDLE</h1>
+            </header>
+
+            <div id="board-container"></div>
+
+            <div id="keyboard-container">
+                <div class="keyboard-row">
+                    <button data-key="q">q</button>
+                    <button data-key="w">w</button>
+                    <button data-key="e">e</button>
+                    <button data-key="r">r</button>
+                    <button data-key="t">t</button>
+                    <button data-key="y">y</button>
+                    <button data-key="u">u</button>
+                    <button data-key="i">i</button>
+                    <button data-key="o">o</button>
+                    <button data-key="p">p</button>
+                </div>
+                <div class="keyboard-row">
+                    <button data-key="a">a</button>
+                    <button data-key="s">s</button>
+                    <button data-key="d">d</button>
+                    <button data-key="f">f</button>
+                    <button data-key="g">g</button>
+                    <button data-key="h">h</button>
+                    <button data-key="j">j</button>
+                    <button data-key="k">k</button>
+                    <button data-key="l">l</button>
+                </div>
+                <div class="keyboard-row">
+                    <button data-enter>Enter</button>
+                    <button data-key="z">z</button>
+                    <button data-key="x">x</button>
+                    <button data-key="c">c</button>
+                    <button data-key="v">v</button>
+                    <button data-key="b">b</button>
+                    <button data-key="n">n</button>
+                    <button data-key="m">m</button>
+                    <button data-delete>Del</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const boardContainer = document.getElementById('board-container');
+        function createBoxes() {
+            const rows = [];
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('div');
+                row.classList.add('keyboard-row');
+                const cells = [];
+                for (let j = 0; j < 5; j++) {
+                    const box = document.createElement('div');
+                    box.classList.add('board');
+                    row.appendChild(box);
+                    cells.push(box);
+                }
+                boardContainer.appendChild(row);
+                rows.push(cells);
+            }
+            return rows;
+        }
+
+        const rows = createBoxes();
+
+        const randomIndex = Math.floor(Math.random() * wordds.length);
+        const randomWord = wordds[randomIndex];
+        console.log(randomWord);
+        const keyboardButtons = document.querySelectorAll('.keyboard-row button');
+
+        let currentRowIndex = 0;
+        let currentIndex = 0;
+        let enteredCharacters = [];
+
+        keyboardButtons.forEach((button, index) => {
+            button.addEventListener('click', () => {
+                const key = button.getAttribute('data-key');
+                if (currentIndex >= 5) return;
+                rows[currentRowIndex][currentIndex].textContent = key;
+                enteredCharacters[currentRowIndex * 5 + currentIndex] = key;
+                currentIndex++;
+            });
+        });
+
+        const delButton = document.querySelector('[data-delete]');
+        delButton.addEventListener('click', () => {
+            rows[currentRowIndex][currentIndex].textContent = '';
+            currentIndex--;
+            enteredCharacters.pop();
+
+            if (currentIndex < 0) {
+                currentIndex = 0;
+            }
+        });
+
+        const enterButton = document.querySelector('[data-enter]');
+        enterButton.addEventListener('click', () => {
+            let word = enteredCharacters.join('');
+            console.log("Girilen kelime:", word);
+            if (word.length === 5) {
+                for (let i = 0; i < word.length; i++) {
+                    if (word[i] === randomWord[i]) {
+                        rows[currentRowIndex][i].style.backgroundColor = 'green';
+                    } else if (randomWord.includes(word[i])) {
+                        rows[currentRowIndex][i].style.backgroundColor = 'yellow';
+                    } else {
+                        rows[currentRowIndex][i].style.backgroundColor = 'grey';
+                    }
+                }
+            }
+            else {
+                alert("5 harf olmalı");
+            }
+            if (word === randomWord) {
+                alert("bravo kelimeyi buldunuz");
+                keyboardButtons.forEach(button => button.disabled = true);
+                delButton.disabled = true;
+                enterButton.disabled = true;
+            }
+            if (currentIndex >= 5) {
+                currentRowIndex++;
+                currentIndex = 0;
+                enteredCharacters.length = 0;
+            }
+        });
+    </script>
+</body>
+
+</html>
